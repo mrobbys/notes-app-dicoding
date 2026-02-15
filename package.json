@@ -1,0 +1,46 @@
+{
+  "name": "notes-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "webpack --config webpack.prod.js",
+    "start-dev": "webpack serve --config webpack.dev.js",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mrobbys/notes-app-dicoding.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mrobbys/notes-app-dicoding/issues"
+  },
+  "homepage": "https://github.com/mrobbys/notes-app-dicoding#readme",
+  "devDependencies": {
+    "@babel/preset-env": "^7.29.0",
+    "@eslint/js": "^10.0.1",
+    "babel-loader": "^10.0.0",
+    "css-loader": "^7.1.3",
+    "eslint": "^10.0.0",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^17.3.0",
+    "html-webpack-plugin": "^5.6.6",
+    "prettier": "3.8.1",
+    "style-loader": "^4.0.0",
+    "webpack": "^5.105.2",
+    "webpack-cli": "^6.0.1",
+    "webpack-dev-server": "^5.2.3",
+    "webpack-merge": "^6.0.1"
+  },
+  "dependencies": {
+    "@formkit/auto-animate": "^0.9.0",
+    "izitoast": "^1.4.0"
+  }
+}

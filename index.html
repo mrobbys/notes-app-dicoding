@@ -4,7 +4,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Notes App</title>
-    <link rel="stylesheet" href="src/styles/style.css" />
   </head>
   <body>
     <!-- app bar start -->
@@ -19,9 +18,15 @@
       <note-form></note-form>
       <!-- note form end -->
 
-      <!-- note search start -->
-      <note-search></note-search>
-      <!-- note search end -->
+      <div class="actions">
+        <!-- note search start -->
+        <note-search></note-search>
+        <!-- note search end -->
+
+        <!-- note filter start -->
+        <note-filter></note-filter>
+        <!-- note filter end -->
+      </div>
 
       <!-- note list start -->
       <note-list></note-list>
@@ -29,6 +34,8 @@
     </main>
     <!-- main content end -->
 
-    <script type="module" src="src/app.js"></script>
+    <!-- loading indicator start -->
+    <loading-indicator></loading-indicator>
+    <!-- loading indicator end -->
   </body>
 </html>

@@ -1,3 +1,5 @@
+import autoAnimate from '@formkit/auto-animate';
+
 class NoteList extends HTMLElement {
   _shadowRoot = null;
   _style = null;
@@ -5,10 +7,14 @@ class NoteList extends HTMLElement {
   constructor() {
     super();
 
-    this._shadowRoot = this.attachShadow({ mode: "open" });
-    this._style = document.createElement("style");
+    this._shadowRoot = this.attachShadow({ mode: 'open' });
+    this._style = document.createElement('style');
+  }
 
+  connectedCallback() {
     this.render();
+
+    autoAnimate(this);
   }
 
   _updateStyle() {
@@ -25,10 +31,10 @@ class NoteList extends HTMLElement {
   }
 
   _emptyContent() {
-    this._shadowRoot.innerHTML = "";
+    this._shadowRoot.innerHTML = '';
   }
 
-  render(){
+  render() {
     this._emptyContent();
     this._updateStyle();
 
@@ -41,4 +47,4 @@ class NoteList extends HTMLElement {
   }
 }
 
-customElements.define("note-list", NoteList);
+customElements.define('note-list', NoteList);

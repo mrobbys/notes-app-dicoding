@@ -1,3 +1,6 @@
+import autoAnimate from '@formkit/auto-animate';
+import Utils from '../utils.js';
+
 class NoteForm extends HTMLElement {
   _shadowRoot = null;
   _style = null;
@@ -6,17 +9,23 @@ class NoteForm extends HTMLElement {
   constructor() {
     super();
 
-    this._shadowRoot = this.attachShadow({ mode: "open" });
-    this._style = document.createElement("style");
+    this._shadowRoot = this.attachShadow({ mode: 'open' });
+    this._style = document.createElement('style');
   }
 
   connectedCallback() {
     this.render();
-    const form = this._shadowRoot.querySelector("form");
-    const titleInput = this._shadowRoot.querySelector("#title");
-    const bodyInput = this._shadowRoot.querySelector("#body");
+
+    const formGroups = this._shadowRoot.querySelectorAll('.form-group');
+    formGroups.forEach((group) => {
+      autoAnimate(group);
+    });
+
+    const form = this._shadowRoot.querySelector('form');
+    const titleInput = this._shadowRoot.querySelector('#title');
+    const bodyInput = this._shadowRoot.querySelector('#body');
     const submitButton = this._shadowRoot.querySelector(
-      "button[type='submit']",
+      "button[type='submit']"
     );
 
     this._formSubmitHandler = (e) => {
@@ -24,9 +33,9 @@ class NoteForm extends HTMLElement {
       this._addNote();
     };
 
-    form?.addEventListener("submit", this._formSubmitHandler);
-    form?.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
+    form?.addEventListener('submit', this._formSubmitHandler);
+    form?.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
         e.preventDefault();
         titleInput.focus();
         this._addNote();
@@ -35,23 +44,23 @@ class NoteForm extends HTMLElement {
 
     // validation
     const updateButtonState = () => {
-      const titleValue = titleInput.value;
-      const bodyValue = bodyInput.value;
-      const titleInvalid = titleValue.length > 0 && titleValue.length < 3;
+      const titleValue = titleInput.value.trim();
+      const bodyValue = bodyInput.value.trim();
+      const titleInvalid = titleValue.length > 0 && titleValue.length < 5;
       const bodyInvalid = bodyValue.length > 0 && bodyValue.length < 5;
       submitButton.disabled =
         !titleValue || !bodyValue || titleInvalid || bodyInvalid;
     };
 
     if (titleInput) {
-      titleInput.addEventListener("input", () => {
+      titleInput.addEventListener('input', () => {
         this._validateTitle();
         updateButtonState();
       });
     }
 
     if (bodyInput) {
-      bodyInput.addEventListener("input", () => {
+      bodyInput.addEventListener('input', () => {
         this._validateBody();
         updateButtonState();
       });
@@ -61,16 +70,16 @@ class NoteForm extends HTMLElement {
   }
 
   disconnectedCallback() {
-    const form = this._shadowRoot.querySelector("form");
+    const form = this._shadowRoot.querySelector('form');
     if (form && this._formSubmitHandler) {
-      form.removeEventListener("submit", this._formSubmitHandler);
-      form.removeEventListener("keydown", this._formSubmitHandler);
+      form.removeEventListener('submit', this._formSubmitHandler);
+      form.removeEventListener('keydown', this._formSubmitHandler);
     }
   }
 
   _addFormListener() {
     if (!form) {
-      alert("Form tidak ditemukan");
+      alert('Form tidak ditemukan');
       return;
     }
 
@@ -81,60 +90,84 @@ class NoteForm extends HTMLElement {
   }
 
   _validateTitle() {
-    const titleInput = this._shadowRoot.querySelector("#title");
-    const titleError = this._shadowRoot.querySelector("#title-error");
-    if (titleInput.value.length > 0 && titleInput.value.length < 3) {
-      titleError.textContent = "Panjang judul minimal 3 karakter";
-    } else {
-      titleError.textContent = "";
+    const titleInput = this._shadowRoot.querySelector('#title');
+    const titleGroup = titleInput.parentElement;
+    const oldError = titleGroup.querySelector('#title-error');
+    const isInvalid =
+      titleInput.value.trim().length > 0 && titleInput.value.trim().length < 5;
+
+    // if invalid and error element not exist, create error element
+    if (isInvalid && !oldError) {
+      Utils.createErrorElement(
+        'title-error',
+        'Panjang judul minimal 5 karakter',
+        titleGroup
+      );
+    }
+
+    // if valid and error element exist, delete error element
+    if (!isInvalid && oldError) {
+      oldError.remove();
     }
   }
 
   _validateBody() {
-    const bodyInput = this._shadowRoot.querySelector("#body");
-    const bodyError = this._shadowRoot.querySelector("#body-error");
-    if (bodyInput.value.length > 0 && bodyInput.value.length < 5) {
-      bodyError.textContent = "Panjang isi catatan minimal 5 karakter";
-    } else {
-      bodyError.textContent = "";
+    const bodyInput = this._shadowRoot.querySelector('#body');
+    const bodyGroup = bodyInput.parentElement;
+    const oldError = bodyGroup.querySelector('#body-error');
+    const isInvalid =
+      bodyInput.value.trim().length > 0 && bodyInput.value.trim().length < 5;
+
+    // if invalid and error element not exist, create error element
+    if (isInvalid && !oldError) {
+      Utils.createErrorElement(
+        'body-error',
+        'Panjang isi minimal 5 karakter',
+        bodyGroup
+      );
+    }
+
+    // if valid and error element exist, delete error element
+    if (!isInvalid && oldError) {
+      oldError.remove();
     }
   }
 
   _addNote() {
-    const titleInput = this._shadowRoot.querySelector("#title");
-    const bodyInput = this._shadowRoot.querySelector("#body");
-    const titleError = this._shadowRoot.querySelector("#title-error");
-    const bodyError = this._shadowRoot.querySelector("#body-error");
+    const titleInput = this._shadowRoot.querySelector('#title');
+    const bodyInput = this._shadowRoot.querySelector('#body');
+    const titleError = this._shadowRoot.querySelector('#title-error');
+    const bodyError = this._shadowRoot.querySelector('#body-error');
 
     // state error
     let isValid = true;
 
-    if (titleError.textContent || bodyError.textContent) {
+    if (titleError || bodyError) {
       isValid = false;
     }
 
-    if (!titleInput.value || !bodyInput.value) {
+    if (!titleInput.value.trim() || !bodyInput.value.trim()) {
       isValid = false;
     }
 
     if (!isValid) return;
 
     this.dispatchEvent(
-      new CustomEvent("note-added", {
+      new CustomEvent('note-added', {
         detail: {
-          title: titleInput.value,
-          body: bodyInput.value,
+          title: titleInput.value.trim(),
+          body: bodyInput.value.trim()
         },
         bubbles: true,
-        composed: true,
-      }),
+        composed: true
+      })
     );
 
-    this._shadowRoot.querySelector("form").reset();
+    this._shadowRoot.querySelector('form').reset();
 
-    // reset state error
-    titleError.textContent = "";
-    bodyError.textContent = "";
+    // delete error element if exist
+    const allErrors = this._shadowRoot.querySelectorAll("small[id$='-error']");
+    allErrors.forEach((error) => error.remove());
   }
 
   _updateStyle() {
@@ -169,7 +202,8 @@ class NoteForm extends HTMLElement {
 
     .form-group textarea {
       resize: none;
-      height: 150px;
+      min-height: 100px;
+      height: 100px;
     }
 
     .note-form button {
@@ -181,7 +215,7 @@ class NoteForm extends HTMLElement {
       cursor: pointer;
     }
 
-    #title-error, #body-error {
+    .form-group small {
       color: red;
       font-size: 0.8rem;
       margin-top: 0.25rem;
@@ -195,7 +229,7 @@ class NoteForm extends HTMLElement {
   }
 
   _emptyContent() {
-    this._shadowRoot.innerHTML = "";
+    this._shadowRoot.innerHTML = '';
   }
 
   render() {
@@ -214,18 +248,14 @@ class NoteForm extends HTMLElement {
               id="title"
               placeholder="Judul catatan"
             />
-            <small id="title-error"></small>
           </div>
 
           <div class="form-group">
             <label for="body">Isi Catatan</label>
             <textarea
               id="body"
-              rows="4"
               placeholder="Isi catatan"
-              
             ></textarea>
-            <small id="body-error"></small>
           </div>
 
           <button type="submit">Tambah</button>
@@ -235,4 +265,4 @@ class NoteForm extends HTMLElement {
   }
 }
 
-customElements.define("note-form", NoteForm);
+customElements.define('note-form', NoteForm);
